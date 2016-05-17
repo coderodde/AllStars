@@ -7,7 +7,7 @@ package net.coderodde.graph.util;
  * @version 1.6 (May 15, 2016)
  */
 public interface HeuristicFunction {
-    
+
     /**
      * Returns an optimistic estimate for distance between {@code from} and
      * {@code to}.

@@ -15,22 +15,22 @@ import net.coderodde.util.MinimumPriorityQueue;
  * @param <E> the element type.
  */
 public class DaryHeap<E> implements MinimumPriorityQueue<E> {
-    
+
     /**
      * The minimum storage capacity.
      */
     private static final int MINIMUM_CAPACITY = 128;
-    
+
     /**
      * The default storage capacity.
      */
     private static final int DEFAULT_CAPACITY = 1024;
-    
+
     /**
      * The minimum degree of the heaps. (Signifies the binary heap.)
      */
     private static final int MINIMUM_DEGREE = 2;
-    
+
     /**
      * The default degree of the heaps.
      */
@@ -43,55 +43,55 @@ public class DaryHeap<E> implements MinimumPriorityQueue<E> {
      * @param <P> the priority key type.
      */
     private static class Node<E> {
-        
+
         Node(E element, double priority, int index) {
             this.element = element;
             this.priority = priority;
             this.index = index;
         }
-        
+
         /**
          * The actual element.
          */
         E element;
-        
+
         /**
          * The priority of the element.
          */
         double priority;
-        
+
         /**
          * The index of this node in the storage array.
          */
         int index;
     }
-    
+
     /**
      * The actual degree of this heap.
      */
     private final int degree;
-    
+
     /**
      * The actual storage array.
      */
     private Node[] storage;
-    
+
     /**
      * The map mapping elements to their respective storage nodes.
      */
     private Map<E, Node<E>> map;
-    
+
     /**
      * Holds the array of indices as to avoid creating index arrays
      * every time we are doing something.
      */
     private int[] indices;
-    
+
     /**
      * Caches the amount of elements in this heap.
      */
     private int size;
-    
+
     /**
      * Constructs a new <tt>d</tt>-ary heap with given degree and capacity.
      * 
@@ -106,7 +106,7 @@ public class DaryHeap<E> implements MinimumPriorityQueue<E> {
         this.indices = new int[degree];
         this.map = new HashMap<>(capacity);
     }
-    
+
     /**
      * Constructs a new heap with degree <code>degree</code> and default 
      * capacity.
@@ -116,14 +116,14 @@ public class DaryHeap<E> implements MinimumPriorityQueue<E> {
     public DaryHeap(final int degree) {
         this(degree, DEFAULT_CAPACITY);
     }
-    
+
     /**
      * Construct a new heap with default parameters.
      */
     public DaryHeap() {
         this(DEFAULT_DEGREE, DEFAULT_CAPACITY);
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -132,7 +132,7 @@ public class DaryHeap<E> implements MinimumPriorityQueue<E> {
         if (map.containsKey(element)) {
             return;
         }
-        
+
         checkAndExpand();
         Node<E> node = new Node<>(element, priority, size);
         storage[size] = node;
@@ -147,13 +147,13 @@ public class DaryHeap<E> implements MinimumPriorityQueue<E> {
     @Override
     public void decreasePriority(E element, double newPriority) {
         Node<E> node = map.get(element);
-        
+
         if (node == null 
                 || node.index == 0
                 || node.priority <= newPriority) {
             return;
         }
-        
+
         node.priority = newPriority;
         siftUp(node.index);
     }
@@ -167,21 +167,21 @@ public class DaryHeap<E> implements MinimumPriorityQueue<E> {
             throw new NoSuchElementException(
             "Reading from an empty d-ary heap.");
         }
-        
+
         E ret = ((Node<E>) storage[0]).element;
         map.remove(ret);
         Node<E> node = (Node<E>) storage[--size];
         storage[size] = null; // For the sake of garbage collection.
-        
+
         if (size != 0) {
             storage[0] = node;
             node.index = 0;
             siftDown(0);
         }
-        
+
         return ret;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -190,7 +190,7 @@ public class DaryHeap<E> implements MinimumPriorityQueue<E> {
         if (size == 0) {
             throw new NoSuchElementException("Reading from an empty queue.");
         }
-        
+
         return ((Node<E>) storage[0]).element;
     }
 
@@ -219,7 +219,7 @@ public class DaryHeap<E> implements MinimumPriorityQueue<E> {
         for (int i = 0; i != size; ++i) {
             storage[i] = null;
         }
-        
+
         map.clear();
         size = 0;
     }
@@ -242,7 +242,7 @@ public class DaryHeap<E> implements MinimumPriorityQueue<E> {
     public String toString() {
         return "DaryHeap: degree = " + degree;
     }
-    
+
     /**
      * Checks that the degree is not less than the minimum degree, which is 2.
      * 
@@ -255,7 +255,7 @@ public class DaryHeap<E> implements MinimumPriorityQueue<E> {
             ", received " + degree + ".");
         }
     }
-    
+
     /**
      * Checks the capacity is not less than minimum capacity.
      * 
@@ -264,7 +264,7 @@ public class DaryHeap<E> implements MinimumPriorityQueue<E> {
     private int checkCapacity(int capacity) {
         return capacity < MINIMUM_CAPACITY ? MINIMUM_CAPACITY : capacity;
     }
-    
+
     /**
      * If the storage array is full, expands it and copies the old data into it.
      */
@@ -275,7 +275,7 @@ public class DaryHeap<E> implements MinimumPriorityQueue<E> {
             storage = arr;
         }
     }
-    
+
     /**
      * Loads the array {@code indices} with the indices of children nodes of the
      * node at index {@code index}.
@@ -285,14 +285,14 @@ public class DaryHeap<E> implements MinimumPriorityQueue<E> {
     private void computeChildrenIndices(int index) {
         for (int i = 0; i != degree; ++i) {
             indices[i] = degree * index + i + 1;
-            
+
             if (indices[i] >= size) {
                 indices[i] = -1;
                 break;
             }
         }
     }
-    
+
     /**
      * Computes and returns the index of the parent of the node at index
      * <code>index</code>.
@@ -303,7 +303,7 @@ public class DaryHeap<E> implements MinimumPriorityQueue<E> {
     private int getParentIndex(int index) {
         return (index - 1) / degree;
     }
-    
+
     /**
      * Sifts the node at index <code>index</code> until <tt>d</tt>-ary heap 
      * invariant is fixed.
@@ -314,32 +314,32 @@ public class DaryHeap<E> implements MinimumPriorityQueue<E> {
         if (index == 0) {
             return;
         }
-        
+
         int parentIndex = getParentIndex(index);
         Node<E> target = (Node<E>) storage[index];
-        
+
         for (;;) {
             Node<E> parent = (Node<E>) storage[parentIndex];
-            
+
             if (parent.priority > target.priority) {
                 storage[index] = parent;
                 parent.index = index;
-                
+
                 index = parentIndex;
                 parentIndex = getParentIndex(index);
             } else {
                 break;
             }
-            
+
             if (index == 0) {
                 break;
             }
         }
-        
+
         storage[index] = target;
         target.index = index;
     }
-    
+
     /**
      * Sifts a node at index <code>index</code> down until <tt>d</tt>-ary heap
      * invariant is fixed.
@@ -349,34 +349,34 @@ public class DaryHeap<E> implements MinimumPriorityQueue<E> {
     private void siftDown(int index) {
         Node<E> target = (Node<E>) storage[index];
         double priority = target.priority;
-        
+
         while (true) {
             double minChildPriority = priority;
             int minChildIndex = -1;
             computeChildrenIndices(index);
-            
+
             for (int i : indices) {
                 if (i == -1) {
                     break;
                 }
-                
+
                 double tentative = ((Node<E>) storage[i]).priority;
-                
+
                 if (minChildPriority > tentative) {
                     minChildPriority = tentative;
                     minChildIndex = i;
                 }
             }
-            
+
             if (minChildIndex == -1) {
                 storage[index] = target;
                 target.index = index;
                 return;
             }
-            
+
             storage[index] = storage[minChildIndex];
             storage[index].index = index;
-            
+
             // Go for the next iteration.
             index = minChildIndex;
         }

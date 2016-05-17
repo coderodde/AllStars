@@ -16,11 +16,11 @@ import net.coderodde.graph.util.HeuristicFunction;
 public class PointHeuristicFunction implements HeuristicFunction {
 
     private final Map<Integer, Point2D.Double> map = new HashMap<>();
-    
+
     public void map(final Integer node, final Point2D.Double point) {
         this.map.put(node, point);
     }
-    
+
     @Override
     public double estimate(final Integer from, final Integer to) {
         return map.get(from).distance(map.get(to));

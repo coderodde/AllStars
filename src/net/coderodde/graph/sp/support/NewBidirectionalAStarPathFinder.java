@@ -1,6 +1,7 @@
 package net.coderodde.graph.sp.support;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -37,39 +38,44 @@ public class NewBidirectionalAStarPathFinder extends HeuristicPathFinder {
                                "The input heuristic function is null.");
         Objects.requireNonNull(source, "The source node is null.");
         Objects.requireNonNull(target, "The target node is null.");
-        
+
+        if (source.equals(target)) {
+            return new ArrayList<>(Arrays.asList(target));
+        }
+
         final MinimumPriorityQueue<Integer> OPENA = new DaryHeap<>();
         final MinimumPriorityQueue<Integer> OPENB = new DaryHeap<>();
-        
+
         final Set<Integer> CLOSED = new HashSet<>();
-        
+
         final Map<Integer, Integer> PARENTSA = new HashMap<>();
         final Map<Integer, Integer> PARENTSB = new HashMap<>();
-        
+
         final Map<Integer, Double> DISTANCEA = new HashMap<>();
         final Map<Integer, Double> DISTANCEB = new HashMap<>();
-        
+
         double bestPathCost = Double.POSITIVE_INFINITY;
         double fA = heuristicFunction.estimate(source, target);
         double fB = heuristicFunction.estimate(target, source);
+
         Integer touchNode = null;
-        
+
         OPENA.add(source, fA);
         OPENB.add(target, fB);
-        
+
         PARENTSA.put(source, null);
         PARENTSB.put(target, null);
-        
+
         DISTANCEA.put(source, 0.0);
         DISTANCEB.put(target, 0.0);
-        
+
         while (!OPENA.isEmpty() && !OPENB.isEmpty()) {
             if (OPENA.size() < OPENB.size()) {
                 final Integer current = OPENA.extractMinimum();
                 CLOSED.add(current);
-                
+
                 final double currentDistance = DISTANCEA.get(current);
-                
+
                 if (currentDistance + 
                         heuristicFunction.estimate(current, target) 
                         >= bestPathCost 
@@ -80,16 +86,16 @@ public class NewBidirectionalAStarPathFinder extends HeuristicPathFinder {
                     // Reject 'current'.
                     continue;
                 }
-                
+
                 for (final Integer child : digraph.getChildrenOf(current)) {
                     if (CLOSED.contains(child)) {
                         continue;
                     }
-                    
+
                     final double tentativeScore = 
                             DISTANCEA.get(current) + 
                             digraph.getEdgeWeight(current, child);
-                    
+
                     if (!DISTANCEA.containsKey(child)) {
                         DISTANCEA.put(child, tentativeScore);
                         PARENTSA.put(child, current);
@@ -98,8 +104,8 @@ public class NewBidirectionalAStarPathFinder extends HeuristicPathFinder {
                                   heuristicFunction.estimate(child, target));
 
                         if (DISTANCEB.containsKey(child)) {
-                            double pathLength = tentativeScore +
-                                                DISTANCEB.get(child);
+                            final double pathLength = tentativeScore +
+                                                      DISTANCEB.get(child);
 
                             if (bestPathCost > pathLength) {
                                 bestPathCost = pathLength;
@@ -115,8 +121,8 @@ public class NewBidirectionalAStarPathFinder extends HeuristicPathFinder {
                                 heuristicFunction.estimate(child, target));
 
                         if (DISTANCEB.containsKey(child)) {
-                            double pathLength = tentativeScore +
-                                                DISTANCEB.get(child);
+                            final double pathLength = tentativeScore +
+                                                      DISTANCEB.get(child);
 
                             if (bestPathCost > pathLength) {
                                 bestPathCost = pathLength;
@@ -125,18 +131,18 @@ public class NewBidirectionalAStarPathFinder extends HeuristicPathFinder {
                         }
                     }
                 }
-                
+
                 if (!OPENA.isEmpty()) {
                     final Integer min = OPENA.min();
                     fA = DISTANCEA.get(min) + 
-                         heuristicFunction.estimate(current, target);
+                         heuristicFunction.estimate(min, target);
                 }
             } else {
                 final Integer current = OPENB.extractMinimum();
                 CLOSED.add(current);
-                
+
                 final double currentDistance = DISTANCEB.get(current);
-                
+
                 if (currentDistance + 
                         heuristicFunction.estimate(current, source)
                         >= bestPathCost
@@ -147,7 +153,7 @@ public class NewBidirectionalAStarPathFinder extends HeuristicPathFinder {
                     // Reject 'current'.
                     continue;
                 } 
-                
+
                 for (final Integer parent : digraph.getParentsOf(current)) {
                     if (CLOSED.contains(parent)) {
                         continue;
@@ -164,8 +170,8 @@ public class NewBidirectionalAStarPathFinder extends HeuristicPathFinder {
                                   heuristicFunction.estimate(parent, source));
 
                         if (DISTANCEA.containsKey(parent)) {
-                            double pathLength = tentativeScore +
-                                                DISTANCEA.get(parent);
+                            final double pathLength = tentativeScore +
+                                                      DISTANCEA.get(parent);
 
                             if (bestPathCost > pathLength) {
                                 bestPathCost = pathLength;
@@ -181,8 +187,8 @@ public class NewBidirectionalAStarPathFinder extends HeuristicPathFinder {
                                 heuristicFunction.estimate(parent, source));
 
                         if (DISTANCEA.containsKey(parent)) {
-                            double pathLength = tentativeScore +
-                                                DISTANCEA.get(parent);
+                            final double pathLength = tentativeScore +
+                                                      DISTANCEA.get(parent);
 
                             if (bestPathCost > pathLength) {
                                 bestPathCost = pathLength;
@@ -191,19 +197,19 @@ public class NewBidirectionalAStarPathFinder extends HeuristicPathFinder {
                         }
                     }
                 }
-                
+
                 if (!OPENB.isEmpty()) {
                     final Integer min = OPENB.min();
                     fB = DISTANCEB.get(min) + 
-                         heuristicFunction.estimate(current, source);
+                         heuristicFunction.estimate(min, source);
                 }
             }
         }
-        
+
         if (touchNode == null) {
             return new ArrayList<>();
         }
-        
+
         return tracebackPath(touchNode, PARENTSA, PARENTSB);
     }
 }

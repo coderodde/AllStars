@@ -22,7 +22,7 @@ public class Digraph {
                           Double>> childMap = new LinkedHashMap<>();
 
     private int edges;
-    
+
     public int size() {
         return parentMap.size();
     }
@@ -90,11 +90,11 @@ public class Digraph {
             double oldWeight = childMap.get(tailNodeId).get(headNodeId);
             childMap.get(tailNodeId).put(headNodeId, weight);
             parentMap.get(headNodeId).put(tailNodeId, weight);
-            
+
             if (oldWeight != weight) {
                 return true;
             }
-            
+
             return false;
         } else {
             childMap.get(tailNodeId).put(headNodeId, weight);

@@ -15,7 +15,7 @@ import net.coderodde.graph.util.HeuristicFunction;
  * @version 1.6 
  */
 public abstract class HeuristicPathFinder {
-   
+
     /**
      * Searches a shortest path in {@code digraph} from {@code source} to
      * {@code target}.
@@ -32,34 +32,34 @@ public abstract class HeuristicPathFinder {
                                          final HeuristicFunction heuristicFunction,
                                          final Integer source, 
                                          final Integer target);
-    
+
     protected List<Integer> 
         tracebackPath(final Integer target,
                       final Map<Integer, Integer> parentMap) {
         final List<Integer> path = new ArrayList<>();
         Integer current = target;
-        
+
         while (current != null) {
             path.add(current);
             current = parentMap.get(current);
         }
-        
+
         Collections.<Integer>reverse(path);
         return path;
     }
-        
+
     protected List<Integer> 
         tracebackPath(final Integer touch, 
                       final Map<Integer, Integer> parentMapA,
                       final Map<Integer, Integer> parentMapB) {
         final List<Integer> path = tracebackPath(touch, parentMapA);
         Integer current = parentMapB.get(touch);
-        
+
         while (current != null) {
             path.add(current);
             current = parentMapB.get(current);
         }
-        
+
         return path;
     }
 }

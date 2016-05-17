@@ -18,7 +18,7 @@ public interface MinimumPriorityQueue<E> {
      * @param priority the priority of the element.
      */
     public void add(E element, double priority);
-    
+
     /**
      * Decreases the priority of the element {@code element} if it is present.
      * If the element is not in this heap, or new priority does not
@@ -28,7 +28,7 @@ public interface MinimumPriorityQueue<E> {
      * @param newPriority the new priority of the input element.
      */
     public void decreasePriority(E element, double newPriority);
-    
+
     /**
      * Extracts the element with the lowest priority.
      * 
@@ -37,28 +37,28 @@ public interface MinimumPriorityQueue<E> {
      * @throws java.util.NoSuchElementException if the heap is empty.
      */
     public E extractMinimum();
-    
+
     /**
      * Returns but does not remove the minimum element.
      * 
      * @return the minimum element. 
      */
     public E min();
-    
+
     /**
      * Returns the amount of elements in the heap.
      * 
      * @return the amount of elements in the heap. 
      */
     public int size();
-    
+
     /**
      * Returns {@code true} it this heap is empty. {@code false} otherwise.
      * 
      * @return {@code true} or {@code false}.
      */
     public boolean isEmpty();
-    
+
     /**
      * Removes all elements from this heap.
      */

@@ -22,7 +22,7 @@ import net.coderodde.util.support.DaryHeap;
  * @version 1.6 (May 15, 2016)
  */
 public class AStarPathFinder extends HeuristicPathFinder {
-    
+
     /**
      * {@inheritDoc }
      */
@@ -36,34 +36,34 @@ public class AStarPathFinder extends HeuristicPathFinder {
                                "The input heuristic function is null.");
         Objects.requireNonNull(source, "The source node is null.");
         Objects.requireNonNull(target, "The target node is null.");
-        
+
         final MinimumPriorityQueue<Integer> OPEN = new DaryHeap<>();
         final Set<Integer> CLOSED = new HashSet<>();
         final Map<Integer, Integer> PARENTS = new HashMap<>();
         final Map<Integer, Double> DISTANCE = new HashMap<>();
-        
+
         OPEN.add(source, heuristicFunction.estimate(source, target));
         PARENTS.put(source, null);
         DISTANCE.put(source, 0.0);
-        
+
         while (!OPEN.isEmpty()) {
             final Integer current = OPEN.extractMinimum();
-            
+
             if (current.equals(target)) {
                 return tracebackPath(target, PARENTS);
             }
-            
+
             CLOSED.add(current);
-            
+
             for (final Integer child : digraph.getChildrenOf(current)) {
                 if (CLOSED.contains(child)) {
                     continue;
                 }
-                
+
                 final double tentativeCost = 
                         DISTANCE.get(current) +
                         digraph.getEdgeWeight(current, child);
-                
+
                 if (!DISTANCE.containsKey(child)) {
                     DISTANCE.put(child, tentativeCost);
                     PARENTS.put(child, current);
@@ -80,7 +80,7 @@ public class AStarPathFinder extends HeuristicPathFinder {
                 }
             }
         }
-        
+
         return new ArrayList<>();
     }   
 }
